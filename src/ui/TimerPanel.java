@@ -52,6 +52,7 @@ public class TimerPanel extends JPanel {
         btn25 = createStyledButton("25분", new Color(241, 245, 249), new Color(51, 65, 85), new Dimension(100, 40));
         btn50 = createStyledButton("50분", new Color(241, 245, 249), new Color(51, 65, 85), new Dimension(100, 40));
         btn90 = createStyledButton("90분", new Color(241, 245, 249), new Color(51, 65, 85), new Dimension(100, 40));
+        JButton btn5s = createStyledButton("5초(테스트)", new Color(220, 252, 231), new Color(22, 101, 52), new Dimension(110, 40));
 
         ActionListener timeButtonListener = e -> {
             if (swingTimer.isRunning()) {
@@ -62,18 +63,22 @@ public class TimerPanel extends JPanel {
                 setTargetTime(25);
             } else if (e.getSource() == btn50) {
                 setTargetTime(50);
-            } else {
+            } else if (e.getSource() == btn90) {
                 setTargetTime(90);
+            } else {
+                setTargetSeconds(5);
             }
         };
 
         btn25.addActionListener(timeButtonListener);
         btn50.addActionListener(timeButtonListener);
         btn90.addActionListener(timeButtonListener);
+        btn5s.addActionListener(timeButtonListener);
 
         topPanel.add(btn25);
         topPanel.add(btn50);
         topPanel.add(btn90);
+        topPanel.add(btn5s);
         add(topPanel, BorderLayout.NORTH);
 
         lblTimeDisplay = new JLabel("25:00", SwingConstants.CENTER);
@@ -136,6 +141,12 @@ public class TimerPanel extends JPanel {
         resetTimer();
     }
 
+    private void setTargetSeconds(int seconds) {
+        focusMinutes = 0;
+        maxSeconds = seconds;
+        resetTimer();
+    }
+
     private void resetTimer() {
         swingTimer.stop();
         remainingSeconds = maxSeconds;
@@ -166,6 +177,7 @@ public class TimerPanel extends JPanel {
         button.setBackground(background);
         button.setForeground(foreground);
         button.setPreferredSize(size);
+        button.setOpaque(true);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
         return button;
