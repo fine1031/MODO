@@ -34,10 +34,11 @@ public class MainFrame extends JFrame {
     private JLabel lblDailyGoal;
     private JLabel lblTotalTime;
     private JLabel lblPomodoroCount;
+    private final DataManager dataManager;
     private final PomodoroService pomodoroService;
 
     public MainFrame() {
-        DataManager dataManager = new DataManager();
+        dataManager = new DataManager();
         TodoService todoService = new TodoService(dataManager);
         pomodoroService = new PomodoroService(dataManager);
 
@@ -48,6 +49,11 @@ public class MainFrame extends JFrame {
         setLayout(new BorderLayout());
 
         add(createNorthContainer(), BorderLayout.NORTH);
+
+        String savedGoal = dataManager.loadTodayGoal();
+        if (!savedGoal.isEmpty()) {
+            lblDailyGoal.setText("오늘의 목표: " + savedGoal);
+        }
 
         JPanel mainContent = new JPanel(new GridLayout(1, 2, 20, 0));
         mainContent.setBackground(new Color(245, 245, 245));
@@ -186,6 +192,7 @@ public class MainFrame extends JFrame {
         String input = JOptionPane.showInputDialog(this, "오늘 달성할 목표를 입력하세요:");
         if (input != null && !input.trim().isEmpty()) {
             lblDailyGoal.setText("오늘의 목표: " + input.trim());
+            dataManager.saveTodayGoal(input.trim());
         }
     }
 
