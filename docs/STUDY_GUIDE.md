@@ -15,6 +15,9 @@
 5단계: 진입점 확인             → Main.java
 ```
 
+SPEC-05, SPEC-06, SPEC-07 구현 내용을 집중적으로 공부하려면
+[`SPEC-05-07-IMPLEMENTATION_STUDY.md`](SPEC-05-07-IMPLEMENTATION_STUDY.md)를 함께 읽으세요.
+
 ---
 
 ## 핵심 개념 1: Thread vs Swing Timer
