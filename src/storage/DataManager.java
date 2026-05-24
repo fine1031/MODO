@@ -18,6 +18,7 @@ public class DataManager {
     private static final Path TODO_FILE = DATA_DIR.resolve("todo_list.txt");
     private static final Path STATS_FILE = DATA_DIR.resolve("pomodoro_stats.txt");
     private static final Path GOAL_FILE = DATA_DIR.resolve("daily_goal.txt");
+    private static final Path MEMO_FILE = DATA_DIR.resolve("memo.txt");
 
     public List<Todo> loadTodos() {
         List<Todo> todos = new ArrayList<>();
@@ -79,6 +80,29 @@ public class DataManager {
             writer.write(stats.getDate() + "|" + stats.getCompletedPomodoros() + "|" + stats.getTotalFocusMinutes());
         } catch (IOException e) {
             System.out.println("통계 데이터를 저장하지 못했습니다.");
+        }
+    }
+
+    public String loadTodayMemo() {
+        String today = LocalDate.now().toString();
+        if (!Files.exists(MEMO_FILE)) return "";
+        try (BufferedReader reader = Files.newBufferedReader(MEMO_FILE, StandardCharsets.UTF_8)) {
+            String line = reader.readLine();
+            if (line == null) return "";
+            String[] parts = line.split("\\|", 2);
+            if (parts.length >= 2 && today.equals(parts[0])) return parts[1].replace("<NL>", "\n");
+        } catch (IOException e) {
+            System.out.println("메모를 불러오지 못했습니다.");
+        }
+        return "";
+    }
+
+    public void saveTodayMemo(String memo) {
+        ensureDataDir();
+        try (BufferedWriter writer = Files.newBufferedWriter(MEMO_FILE, StandardCharsets.UTF_8)) {
+            writer.write(LocalDate.now() + "|" + memo.replace("\n", "<NL>"));
+        } catch (IOException e) {
+            System.out.println("메모를 저장하지 못했습니다.");
         }
     }
 

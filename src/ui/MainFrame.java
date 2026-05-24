@@ -69,7 +69,7 @@ public class MainFrame extends JFrame {
         todoArea.add(new TodoPanel(todoService), BorderLayout.CENTER);
 
         JPanel calendarArea = createModernPanel("CALENDAR & MEMO");
-        calendarArea.add(new CalendarMemoPanel(), BorderLayout.CENTER);
+        calendarArea.add(new CalendarMemoPanel(dataManager), BorderLayout.CENTER);
 
         rightArea.add(todoArea);
         rightArea.add(calendarArea);
