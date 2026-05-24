@@ -2,6 +2,35 @@
 
 Java Swing 기반 학습 몰입 도우미 프로젝트입니다. 사용자가 오늘 할 일을 정리하고, 뽀모도로 타이머로 집중 시간을 기록한 뒤, 오늘의 총 공부 시간과 완료 횟수를 확인할 수 있게 만드는 것이 1차 MVP 목표입니다.
 
+## 문서 (docs/)
+
+| 문서 | 내용 |
+|------|------|
+| [ASSIGNMENTS.md](docs/ASSIGNMENTS.md) | 팀원별 담당 SPEC, 진행 순서, 의존관계 |
+| [CLASS_DIAGRAM.md](docs/CLASS_DIAGRAM.md) | 클래스 구조, 레이어 관계, 타이머 완료 시퀀스 |
+| [DATA_MODEL.md](docs/DATA_MODEL.md) | 저장 파일 형식, 필드 설명, 확장 방법 |
+| [STUDY_GUIDE.md](docs/STUDY_GUIDE.md) | 자바/백엔드 초보를 위한 핵심 개념 설명 |
+| [specs/SPEC-01](docs/specs/SPEC-01-todo-edit.md) | TODO 수정 기능 |
+| [specs/SPEC-02](docs/specs/SPEC-02-daily-goal-save.md) | 오늘 목표 저장 |
+| [specs/SPEC-03](docs/specs/SPEC-03-timer-break.md) | 타이머 휴식 모드 |
+| [specs/SPEC-04](docs/specs/SPEC-04-stats-format.md) | 통계 표시 개선 |
+| [specs/SPEC-05](docs/specs/SPEC-05-memo-save.md) | 메모 저장 기능 |
+| [specs/SPEC-06](docs/specs/SPEC-06-calendar.md) | 캘린더 영역 구현 |
+| [specs/SPEC-07](docs/specs/SPEC-07-stats-panel.md) | 통계 패널 + 성공률 추적 |
+
+> 새 기능을 맡기 전에 해당 SPEC 파일을 먼저 읽어보세요. 건드릴 파일, 성공 기준, 함정이 정리되어 있습니다.
+
+## 빌드 환경
+
+- **JDK:** OpenJDK 24 (`.tool-versions` 기준)
+- **빌드 도구:** 없음 (순수 `javac`)
+- **외부 라이브러리:** 없음
+
+JDK 설치 확인:
+```bash
+java -version
+```
+
 ## 실행 방법
 
 ```bash
@@ -44,10 +73,20 @@ src/
 
 ## 저장 파일
 
-앱 실행 후 데이터는 `data/` 폴더에 저장됩니다.
+앱 실행 후 데이터는 `data/` 폴더에 저장됩니다. (`data/`는 `.gitignore`에 포함 — Git에 올라가지 않음)
 
 - `data/todo_list.txt`: `title|completed|targetDate`
 - `data/pomodoro_stats.txt`: `date|completedPomodoros|totalFocusMinutes`
+
+파일 형식 상세 → [DATA_MODEL.md](docs/DATA_MODEL.md)
+
+## 설계 결정 사항
+
+| 결정 | 이유 |
+|------|------|
+| 3패널 동시 표시 (CardLayout 미사용) | 타이머·투두·캘린더를 한눈에 보는 것이 UX상 더 직관적이라 판단 |
+| `javax.swing.Timer` 사용 | EDT 안전성 확보. raw Thread + `SwingUtilities.invokeLater` 대신 Swing이 이를 자동 처리 |
+| DB 없이 txt 파일 저장 | 설치 의존성 없이 실행 가능, 팀 환경에서 파일 직접 확인·수정 가능 |
 
 ## 브랜치 규칙
 
