@@ -7,20 +7,18 @@
 
 ## 오지헌 (팀장) — MainFrame & DataManager
 
-| 순서 | SPEC | 핵심 작업 | 파일 |
-|------|------|----------|------|
-| 1 | [SPEC-02](specs/SPEC-02-daily-goal-save.md) | 오늘 목표 파일 저장/로드 | `MainFrame.java`, `DataManager.java` |
-| 2 | [SPEC-04](specs/SPEC-04-stats-format.md) | 통계 HH:MM 형식 표시 | `MainFrame.java` |
-
-> SPEC-02를 먼저 올려줘야 이태영이 SPEC-05 작업을 시작할 수 있어요.
+| 순서 | SPEC | 핵심 작업 | 파일 | 상태 |
+|------|------|----------|------|------|
+| 1 | [SPEC-02](specs/SPEC-02-daily-goal-save.md) | 오늘 목표 파일 저장/로드 | `MainFrame.java`, `DataManager.java` | ✅ 완료 |
+| 2 | [SPEC-04](specs/SPEC-04-stats-format.md) | 통계 HH:MM 형식 표시 | `MainFrame.java` | 미완료 |
 
 ---
 
 ## 김태욱 — 포모도로 타이머 (TimerPanel)
 
-| 순서 | SPEC | 핵심 작업 | 파일 |
-|------|------|----------|------|
-| 1 | [SPEC-03](specs/SPEC-03-timer-break.md) | 집중 완료 후 5분 휴식 모드 자동 전환 | `TimerPanel.java` |
+| 순서 | SPEC | 핵심 작업 | 파일 | 상태 |
+|------|------|----------|------|------|
+| 1 | [SPEC-03](specs/SPEC-03-timer-break.md) | 집중 완료 후 5분 휴식 모드 자동 전환 | `TimerPanel.java` | 미완료 |
 
 > 독립 작업. 다른 팀원 완료 기다릴 필요 없이 바로 시작 가능.
 
@@ -28,9 +26,9 @@
 
 ## 이예나 — 할 일 관리 (TodoPanel)
 
-| 순서 | SPEC | 핵심 작업 | 파일 |
-|------|------|----------|------|
-| 1 | [SPEC-01](specs/SPEC-01-todo-edit.md) | 할 일 제목 수정 기능 | `TodoPanel.java`, `TodoService.java` |
+| 순서 | SPEC | 핵심 작업 | 파일 | 상태 |
+|------|------|----------|------|------|
+| 1 | [SPEC-01](specs/SPEC-01-todo-edit.md) | 할 일 제목 수정 기능 | `TodoPanel.java`, `TodoService.java` | 미완료 |
 
 > 독립 작업. 다른 팀원 완료 기다릴 필요 없이 바로 시작 가능.
 
@@ -38,13 +36,11 @@
 
 ## 이태영 — 캘린더 & 통계 (CalendarMemoPanel → StatsPanel)
 
-| 순서 | SPEC | 핵심 작업 | 선행 조건 |
-|------|------|----------|----------|
-| 1 | [SPEC-05](specs/SPEC-05-memo-save.md) | 메모 파일 저장/로드 + 저장 버튼 | 오지헌 SPEC-02 완료 후 |
-| 2 | [SPEC-06](specs/SPEC-06-calendar.md) | 달력 GridLayout + 날짜별 기록 뷰 | SPEC-05 완료 후 |
-| 3 | [SPEC-07](specs/SPEC-07-stats-panel.md) | JTable 통계 패널 + 성공률 추적 | SPEC-05 완료 후 |
-
-> SPEC-06과 SPEC-07은 순서 무관하게 병렬 진행 가능. 단, 둘 다 SPEC-05가 먼저여야 함.
+| 순서 | SPEC | 핵심 작업 | 선행 조건 | 상태 |
+|------|------|----------|----------|------|
+| 1 | [SPEC-05](specs/SPEC-05-memo-save.md) | 메모 파일 저장/로드 + 저장 버튼 | SPEC-02 완료 후 | ✅ 완료 |
+| 2 | [SPEC-06](specs/SPEC-06-calendar.md) | 달력 GridLayout + 날짜별 기록 뷰 | SPEC-05 완료 후 | ✅ 완료 |
+| 3 | [SPEC-07](specs/SPEC-07-stats-panel.md) | JTable 통계 패널 + 성공률 추적 | SPEC-05 완료 후 | ✅ 완료 |
 
 ---
 
