@@ -11,7 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataManager {
     private static final Path DATA_DIR = Path.of("data");
@@ -54,30 +56,40 @@ public class DataManager {
 
     public PomodoroStats loadTodayStats() {
         String today = LocalDate.now().toString();
-        if (!Files.exists(STATS_FILE)) {
-            return new PomodoroStats(today, 0, 0);
-        }
+        PomodoroStats found = loadAllStats().get(today);
+        return found != null ? found : new PomodoroStats(today, 0, 0);
+    }
 
+    public Map<String, PomodoroStats> loadAllStats() {
+        Map<String, PomodoroStats> statsMap = new HashMap<>();
+        if (!Files.exists(STATS_FILE)) return statsMap;
         try (BufferedReader reader = Files.newBufferedReader(STATS_FILE, StandardCharsets.UTF_8)) {
-            String line = reader.readLine();
-            if (line == null) {
-                return new PomodoroStats(today, 0, 0);
-            }
-
-            String[] parts = line.split("\\|", -1);
-            if (parts.length >= 3 && today.equals(parts[0])) {
-                return new PomodoroStats(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|", -1);
+                if (parts.length >= 3) {
+                    statsMap.put(parts[0], new PomodoroStats(
+                            parts[0],
+                            Integer.parseInt(parts[1]),
+                            Integer.parseInt(parts[2])
+                    ));
+                }
             }
         } catch (IOException | NumberFormatException e) {
-            System.out.println("통계 데이터를 불러오지 못했습니다.");
+            System.out.println("전체 통계를 불러오지 못했습니다.");
         }
-        return new PomodoroStats(today, 0, 0);
+        return statsMap;
     }
 
     public void saveStats(PomodoroStats stats) {
+        Map<String, PomodoroStats> all = loadAllStats();
+        all.put(stats.getDate(), stats);
         ensureDataDir();
         try (BufferedWriter writer = Files.newBufferedWriter(STATS_FILE, StandardCharsets.UTF_8)) {
-            writer.write(stats.getDate() + "|" + stats.getCompletedPomodoros() + "|" + stats.getTotalFocusMinutes());
+            for (PomodoroStats s : all.values()) {
+                writer.write(s.getDate() + "|" + s.getCompletedPomodoros() + "|" + s.getTotalFocusMinutes());
+                writer.newLine();
+            }
         } catch (IOException e) {
             System.out.println("통계 데이터를 저장하지 못했습니다.");
         }
