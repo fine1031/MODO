@@ -57,7 +57,7 @@ public class DataManager {
     public PomodoroStats loadTodayStats() {
         String today = LocalDate.now().toString();
         PomodoroStats found = loadAllStats().get(today);
-        return found != null ? found : new PomodoroStats(today, 0, 0);
+        return found != null ? found : new PomodoroStats(today, 0, 0, 0);
     }
 
     public Map<String, PomodoroStats> loadAllStats() {
@@ -67,10 +67,20 @@ public class DataManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\|", -1);
-                if (parts.length >= 3) {
+                if (parts.length >= 4) {
+                    // date|completed|cancelled|totalMinutes
                     statsMap.put(parts[0], new PomodoroStats(
                             parts[0],
                             Integer.parseInt(parts[1]),
+                            Integer.parseInt(parts[2]),
+                            Integer.parseInt(parts[3])
+                    ));
+                } else if (parts.length == 3) {
+                    // 이전 포맷 호환: cancelled=0 으로 처리
+                    statsMap.put(parts[0], new PomodoroStats(
+                            parts[0],
+                            Integer.parseInt(parts[1]),
+                            0,
                             Integer.parseInt(parts[2])
                     ));
                 }
@@ -87,7 +97,9 @@ public class DataManager {
         ensureDataDir();
         try (BufferedWriter writer = Files.newBufferedWriter(STATS_FILE, StandardCharsets.UTF_8)) {
             for (PomodoroStats s : all.values()) {
-                writer.write(s.getDate() + "|" + s.getCompletedPomodoros() + "|" + s.getTotalFocusMinutes());
+                writer.write(s.getDate() + "|" + s.getCompletedPomodoros()
+                        + "|" + s.getCancelledPomodoros()
+                        + "|" + s.getTotalFocusMinutes());
                 writer.newLine();
             }
         } catch (IOException e) {

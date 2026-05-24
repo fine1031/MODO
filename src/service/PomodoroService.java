@@ -20,4 +20,9 @@ public class PomodoroService {
         todayStats.addFocusSession(focusMinutes);
         dataManager.saveStats(todayStats);
     }
+
+    public void cancelPomodoro() {
+        todayStats.cancelPomodoro();
+        dataManager.saveStats(todayStats);
+    }
 }

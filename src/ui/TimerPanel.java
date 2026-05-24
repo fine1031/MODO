@@ -90,7 +90,13 @@ public class TimerPanel extends JPanel {
         btnToggle.addActionListener(e -> toggleTimer());
 
         JButton btnReset = createStyledButton("RESET", new Color(226, 232, 240), new Color(71, 85, 105), new Dimension(120, 55));
-        btnReset.addActionListener(e -> resetTimer());
+        btnReset.addActionListener(e -> {
+            if (swingTimer.isRunning()) {
+                pomodoroService.cancelPomodoro();
+                onStatsChanged.run();
+            }
+            resetTimer();
+        });
 
         controlPanel.add(btnToggle);
         controlPanel.add(btnReset);

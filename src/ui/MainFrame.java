@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
@@ -36,6 +37,7 @@ public class MainFrame extends JFrame {
     private JLabel lblPomodoroCount;
     private final DataManager dataManager;
     private final PomodoroService pomodoroService;
+    private StatsPanel statsPanel;
 
     public MainFrame() {
         dataManager = new DataManager();
@@ -68,8 +70,14 @@ public class MainFrame extends JFrame {
         JPanel todoArea = createModernPanel("TODO-LIST");
         todoArea.add(new TodoPanel(todoService), BorderLayout.CENTER);
 
-        JPanel calendarArea = createModernPanel("CALENDAR & MEMO");
-        calendarArea.add(new CalendarMemoPanel(dataManager), BorderLayout.CENTER);
+        statsPanel = new StatsPanel(pomodoroService);
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+        tabbedPane.addTab("캘린더", new CalendarMemoPanel(dataManager));
+        tabbedPane.addTab("학습 통계", statsPanel);
+
+        JPanel calendarArea = createModernPanel("CALENDAR & STATS");
+        calendarArea.add(tabbedPane, BorderLayout.CENTER);
 
         rightArea.add(todoArea);
         rightArea.add(calendarArea);
@@ -207,6 +215,7 @@ public class MainFrame extends JFrame {
         PomodoroStats stats = pomodoroService.getTodayStats();
         lblTotalTime.setText("총 공부시간  " + stats.getTotalFocusMinutes() + "분");
         lblPomodoroCount.setText("완료한 뽀모도로  " + stats.getCompletedPomodoros() + "회");
+        if (statsPanel != null) statsPanel.refreshTable();
     }
 
     private void openWebPage(String url) {
