@@ -7,33 +7,40 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class CalendarMemoPanel extends JPanel {
     private static final Color COLOR_TODAY     = new Color(180, 32, 41);
     private static final Color COLOR_HAS_STATS = new Color(254, 226, 226);
-    private static final Color COLOR_SELECTED  = new Color(59, 130, 246);
+    private static final Color COLOR_SELECTED  = new Color(71, 85, 105);
     private static final Color COLOR_DEFAULT   = Color.WHITE;
 
     private final JLabel lblSelectedInfo;
+    private final Consumer<String> onDateSelected;
     private JButton lastSelected = null;
     private Color lastSelectedOriginalColor = COLOR_DEFAULT;
 
-    public CalendarMemoPanel(DataManager dataManager) {
-        setLayout(new BorderLayout(0, 8));
+    public CalendarMemoPanel(DataManager dataManager, Consumer<String> onDateSelected) {
+        this.onDateSelected = onDateSelected;
+        setLayout(new BorderLayout(0, 6));
         setBackground(Color.WHITE);
+        setBorder(new EmptyBorder(14, 0, 2, 0));
 
         Map<String, PomodoroStats> statsMap = dataManager.loadAllStats();
 
         String[] days = {"일", "월", "화", "수", "목", "금", "토"};
         JPanel headerPanel = new JPanel(new GridLayout(1, 7));
         headerPanel.setBackground(Color.WHITE);
+        headerPanel.setPreferredSize(new Dimension(0, 24));
         for (String day : days) {
             JLabel lbl = new JLabel(day, SwingConstants.CENTER);
             lbl.setFont(new Font("맑은 고딕", Font.BOLD, 12));
@@ -42,6 +49,7 @@ public class CalendarMemoPanel extends JPanel {
 
         JPanel gridPanel = new JPanel(new GridLayout(6, 7, 2, 2));
         gridPanel.setBackground(new Color(245, 245, 245));
+        gridPanel.setPreferredSize(new Dimension(0, 190));
         buildCalendarGrid(gridPanel, statsMap);
 
         lblSelectedInfo = new JLabel("날짜를 클릭하면 해당 날의 기록을 볼 수 있어요.", SwingConstants.CENTER);
@@ -49,7 +57,11 @@ public class CalendarMemoPanel extends JPanel {
         lblSelectedInfo.setForeground(Color.GRAY);
 
         add(headerPanel, BorderLayout.NORTH);
-        add(gridPanel, BorderLayout.CENTER);
+        JPanel calendarBody = new JPanel(new BorderLayout());
+        calendarBody.setBackground(Color.WHITE);
+        calendarBody.add(gridPanel, BorderLayout.NORTH);
+
+        add(calendarBody, BorderLayout.CENTER);
         add(lblSelectedInfo, BorderLayout.SOUTH);
     }
 
@@ -99,6 +111,7 @@ public class CalendarMemoPanel extends JPanel {
                 lastSelectedOriginalColor = originalColor;
 
                 showDayInfo(d, statsMap);
+                onDateSelected.accept(d);
             });
 
             gridPanel.add(btn);

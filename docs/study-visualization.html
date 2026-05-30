@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MODO 코드 공부 시각화</title>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: "loose",
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#fff7ed",
+        primaryTextColor: "#172033",
+        primaryBorderColor: "#b4232d",
+        lineColor: "#64748b",
+        secondaryColor: "#eef6f1",
+        tertiaryColor: "#f8fafc",
+        fontFamily: "Inter, Pretendard, Apple SD Gothic Neo, Malgun Gothic, sans-serif"
+      }
+    });
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #5f6b7a;
+      --line: #d9dee7;
+      --modo: #b42029;
+      --modo-dark: #7f1820;
+      --green: #1f7a4d;
+      --blue: #2563a8;
+      --yellow: #946400;
+      --code: #f2f5f8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      line-height: 1.62;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 34px 0 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--modo);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    main {
+      padding: 26px 0 56px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary {
+      min-height: 124px;
+      padding: 17px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .summary strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 15px;
+    }
+
+    .summary span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    section {
+      margin-top: 18px;
+      padding: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 18px 0 7px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mermaid-box {
+      overflow-x: auto;
+      margin-top: 14px;
+      padding: 14px;
+      background: #fbfcfe;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .flow-cards {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .step {
+      position: relative;
+      min-height: 116px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+    }
+
+    .step b {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .step small {
+      color: var(--muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin: 4px 5px 0 0;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--code);
+      color: #293548;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #293548;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: var(--code);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--modo);
+      background: #fff7f7;
+      border-radius: 6px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .status {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .status-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+    }
+
+    .done {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .todo {
+      color: var(--yellow);
+      font-weight: 800;
+    }
+
+    @media (max-width: 920px) {
+      .grid,
+      .flow-cards,
+      .two-col,
+      .status {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <p class="eyebrow">Java Swing Study Map</p>
+      <h1>MODO 코드 구조 한눈에 보기</h1>
+      <p class="lead">
+        이 문서는 현재 프로젝트 코드를 기준으로 UI, Service, Storage, Model의 역할과 데이터 흐름을 공부하기 쉽게 시각화한 자료입니다.
+      </p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid" aria-label="핵심 요약">
+      <div class="summary">
+        <strong>UI 계층</strong>
+        <span><code>ui.*</code> 패키지가 화면을 만들고 버튼 클릭 같은 사용자 입력을 받습니다.</span>
+      </div>
+      <div class="summary">
+        <strong>Service 계층</strong>
+        <span><code>TodoService</code>, <code>PomodoroService</code>가 실제 기능 규칙을 담당합니다.</span>
+      </div>
+      <div class="summary">
+        <strong>Storage 계층</strong>
+        <span><code>DataManager</code>가 <code>data/</code> 폴더의 txt 파일을 읽고 씁니다.</span>
+      </div>
+      <div class="summary">
+        <strong>Model 계층</strong>
+        <span><code>Todo</code>, <code>PomodoroStats</code>가 앱에서 다루는 데이터 모양을 정의합니다.</span>
+      </div>
+    </div>
+
+    <section>
+      <h2>1. 전체 구조</h2>
+      <p class="note">
+        공부할 때는 먼저 이 그림을 보고, 화면 파일이 직접 파일을 저장하지 않고 Service와 DataManager를 거친다는 점을 잡으면 좋습니다.
+      </p>
+      <div class="mermaid-box">
+        <pre class="mermaid">
+flowchart LR
+    Main["Main.java<br>프로그램 시작"] --> MainFrame["MainFrame<br>전체 화면 조립"]
+
+    MainFrame --> TimerPanel["TimerPanel<br>타이머 UI"]
+    MainFrame --> TodoPanel["TodoPanel<br>할 일 UI"]
+    MainFrame --> CalendarMemoPanel["CalendarMemoPanel<br>달력/날짜별 기록 UI"]
+    MainFrame --> StudyStatsFrame["StudyStatsFrame<br>별도 통계 창"]
+
+    TimerPanel --> PomodoroService["PomodoroService<br>뽀모도로 기록 로직"]
+    MainFrame --> TodoPanel
+    CalendarMemoPanel --> TodoPanel
+    TodoPanel --> TodoService["TodoService<br>TODO CRUD 로직"]
+
+    PomodoroService --> DataManager["DataManager<br>파일 저장/로드"]
+    TodoService --> DataManager
+    CalendarMemoPanel --> DataManager
+    MainFrame --> DataManager
+
+    DataManager --> Todo["Todo<br>title, completed, targetDate"]
+    DataManager --> PomodoroStats["PomodoroStats<br>date, completed, cancelled, minutes"]
+        </pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 클래스 관계</h2>
+      <p class="note">
+        클래스 다이어그램은 “누가 누구를 들고 있는지”를 보는 용도입니다. 발표나 코드 설명에서는 이 그림 하나가 제일 든든합니다.
+      </p>
+      <div class="mermaid-box">
+        <pre class="mermaid">
+classDiagram
+    class Main {
+      +main(args: String[])
+    }
+
+    class MainFrame {
+      -DataManager dataManager
+      -PomodoroService pomodoroService
+      -JLabel lblDailyGoal
+      -JLabel lblTotalTime
+      -JLabel lblPomodoroCount
+      -editDailyGoal()
+      -showStatsDialog()
+      -refreshStats()
+      -openWebPage(url: String)
+    }
+
+    class TimerPanel {
+      -PomodoroService pomodoroService
+      -Runnable onStatsChanged
+      -Timer swingTimer
+      -int focusMinutes
+      -int remainingSeconds
+      -double progress
+      -toggleTimer()
+      -tick()
+      -resetTimer()
+      -updateTimeDisplay()
+    }
+
+    class TodoPanel {
+      -TodoService todoService
+      -JPanel listPanel
+      -JTextField inputField
+      -addTodo()
+      -refreshTodos()
+      -createTodoRow(todo, index)
+    }
+
+    class CalendarMemoPanel {
+      -JLabel lblSelectedInfo
+      -JButton lastSelected
+      -buildCalendarGrid(gridPanel, statsMap)
+      -showDayInfo(dateStr, statsMap)
+    }
+
+    class StudyStatsFrame {
+      -DataManager dataManager
+      -DefaultTableModel dailyModel
+      -DefaultTableModel weeklyModel
+      -DefaultTableModel monthlyModel
+      -refreshStats()
+    }
+
+    class TodoService {
+      -DataManager dataManager
+      -List~Todo~ todos
+      +getTodos()
+      +addTodo(title: String)
+      +removeTodo(index: int)
+      +toggleTodo(index: int)
+      +saveTodos()
+    }
+
+    class PomodoroService {
+      -DataManager dataManager
+      -PomodoroStats todayStats
+      +getTodayStats()
+      +completePomodoro(focusMinutes: int)
+      +cancelPomodoro()
+    }
+
+    class DataManager {
+      -Path DATA_DIR
+      -Path TODO_FILE
+      -Path STATS_FILE
+      -Path GOAL_FILE
+      -Path MEMO_FILE
+      +loadTodos()
+      +saveTodos(todos)
+      +loadTodayStats()
+      +loadAllStats()
+      +saveStats(stats)
+      +loadTodayGoal()
+      +saveTodayGoal(goal)
+      +loadTodayMemo()
+      +saveTodayMemo(memo)
+    }
+
+    class Todo {
+      -String title
+      -boolean completed
+      -String targetDate
+      +getTitle()
+      +setTitle(title)
+      +isCompleted()
+      +setCompleted(completed)
+      +getTargetDate()
+    }
+
+    class PomodoroStats {
+      -String date
+      -int completedPomodoros
+      -int cancelledPomodoros
+      -int totalFocusMinutes
+      +addFocusSession(minutes)
+      +cancelPomodoro()
+      +getSuccessRate()
+    }
+
+    Main --> MainFrame
+    MainFrame --> TimerPanel
+    MainFrame --> TodoPanel
+    MainFrame --> CalendarMemoPanel
+    MainFrame --> StudyStatsFrame
+    TimerPanel --> PomodoroService
+    StudyStatsFrame --> DataManager
+    CalendarMemoPanel --> TodoPanel : 선택 날짜 전달
+    TodoPanel --> TodoService
+    PomodoroService --> DataManager
+    TodoService --> DataManager
+    DataManager ..> Todo
+    DataManager ..> PomodoroStats
+        </pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 화면 구성</h2>
+      <p class="note">
+        <code>MainFrame</code>은 화면을 직접 다 만드는 중심 파일입니다. 위쪽 정보바, 왼쪽 타이머, 오른쪽 날짜별 TODO와 캘린더를 조립합니다.
+      </p>
+      <div class="mermaid-box">
+        <pre class="mermaid">
+flowchart TB
+    Window["JFrame: MODO"] --> North["NORTH: createNorthContainer()"]
+    Window --> Center["CENTER: mainContent GridLayout(1, 2)"]
+
+    North --> LinkBar["linkBar<br>학습 통계 / 공지 / LMS / Gemini / 사전"]
+    North --> InfoBar["infoBar<br>날짜 / 오늘 목표 / 오늘 통계"]
+
+    Center --> TimerArea["왼쪽<br>POMODORO TIMER"]
+    Center --> RightArea["오른쪽<br>GridLayout(2, 1)"]
+
+    TimerArea --> TimerPanel["TimerPanel"]
+    RightArea --> TodoArea["TODO-LIST"]
+    RightArea --> CalendarArea["CALENDAR"]
+    TodoArea --> TodoPanel["TodoPanel"]
+    CalendarArea --> CalendarPanel["CalendarMemoPanel"]
+    LinkBar["상단 학습 통계 링크"] --> StatsFrame["StudyStatsFrame<br>일간 / 주간 / 월간"]
+        </pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. 타이머 완료 흐름</h2>
+      <p class="note">
+        타이머에서 가장 중요한 흐름입니다. 시간이 0초가 되면 Service가 통계를 바꾸고, DataManager가 파일에 저장하고, MainFrame이 화면 통계를 새로고침합니다.
+      </p>
+      <div class="flow-cards">
+        <div class="step">
+          <b>1. START</b>
+          <small><code>TimerPanel.toggleTimer()</code>가 <code>swingTimer.start()</code>를 호출합니다.</small>
+        </div>
+        <div class="step">
+          <b>2. 1초마다 tick</b>
+          <small><code>remainingSeconds</code>를 줄이고 화면 시간을 갱신합니다.</small>
+        </div>
+        <div class="step">
+          <b>3. 완료 기록</b>
+          <small><code>PomodoroService.completePomodoro()</code>가 완료 횟수와 집중 시간을 증가시킵니다.</small>
+        </div>
+        <div class="step">
+          <b>4. 파일 저장</b>
+          <small><code>DataManager.saveStats()</code>가 <code>pomodoro_stats.txt</code>에 씁니다.</small>
+        </div>
+        <div class="step">
+          <b>5. 화면 갱신</b>
+          <small><code>onStatsChanged.run()</code>을 통해 <code>MainFrame.refreshStats()</code>가 호출됩니다.</small>
+        </div>
+      </div>
+      <div class="mermaid-box">
+        <pre class="mermaid">
+sequenceDiagram
+    actor User as 사용자
+    participant TimerPanel
+    participant PomodoroService
+    participant PomodoroStats
+    participant DataManager
+    participant MainFrame
+
+    User->>TimerPanel: START 클릭
+    TimerPanel->>TimerPanel: swingTimer.start()
+    loop 1초마다
+      TimerPanel->>TimerPanel: tick(), remainingSeconds 감소
+    end
+    TimerPanel->>PomodoroService: completePomodoro(focusMinutes)
+    PomodoroService->>PomodoroStats: addFocusSession(minutes)
+    PomodoroService->>DataManager: saveStats(todayStats)
+    DataManager->>DataManager: data/pomodoro_stats.txt 저장
+    TimerPanel->>MainFrame: onStatsChanged.run()
+    MainFrame->>MainFrame: lblTotalTime, lblPomodoroCount 갱신
+    TimerPanel-->>User: 완료 다이얼로그 표시
+        </pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>5. TODO 흐름</h2>
+      <p class="note">
+        TODO는 <code>TodoPanel</code>이 입력을 받고, <code>TodoService</code>가 리스트를 바꾸고, <code>DataManager</code>가 저장하는 구조입니다.
+      </p>
+      <div class="mermaid-box">
+        <pre class="mermaid">
+sequenceDiagram
+    actor User as 사용자
+    participant TodoPanel
+    participant TodoService
+    participant Todo as Todo 모델
+    participant DataManager
+
+    User->>TodoPanel: 할 일 입력 후 추가
+    TodoPanel->>TodoService: addTodo(inputField.getText())
+    TodoService->>TodoService: trim, 빈 문자열 검사
+    TodoService->>Todo: new Todo(title, false, 오늘 날짜)
+    TodoService->>DataManager: saveTodos(todos)
+    DataManager->>DataManager: data/todo_list.txt 저장
+    TodoPanel->>TodoPanel: refreshTodos()
+
+    User->>TodoPanel: 체크박스 클릭
+    TodoPanel->>TodoService: toggleTodo(index)
+    TodoService->>Todo: completed 값 반전
+    TodoService->>DataManager: saveTodos(todos)
+    TodoPanel->>TodoPanel: refreshTodos()
+        </pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>6. 저장 파일 지도</h2>
+      <p class="note">
+        이 프로젝트는 DB 없이 txt 파일로 저장합니다. 그래서 파일 포맷을 이해하면 디버깅이 훨씬 쉬워집니다.
+      </p>
+      <div class="mermaid-box">
+        <pre class="mermaid">
+flowchart LR
+    DataManager["DataManager"] --> TodoFile["data/todo_list.txt<br>title|completed|targetDate"]
+    DataManager --> StatsFile["data/pomodoro_stats.txt<br>date|completed|cancelled|totalMinutes"]
+    DataManager --> GoalFile["data/daily_goal.txt<br>date|goal"]
+    DataManager --> MemoFile["data/memo.txt<br>date|memo with &lt;NL&gt;"]
+
+    TodoFile --> TodoService["TodoService 시작 시 loadTodos()"]
+    StatsFile --> PomodoroService["PomodoroService 시작 시 loadTodayStats()"]
+    StatsFile --> CalendarMemoPanel["CalendarMemoPanel loadAllStats()"]
+    GoalFile --> MainFrame["MainFrame 생성자 loadTodayGoal()"]
+        </pre>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>파일</th>
+            <th>읽는 메서드</th>
+            <th>쓰는 메서드</th>
+            <th>포맷</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data/todo_list.txt</code></td>
+            <td><code>loadTodos()</code></td>
+            <td><code>saveTodos()</code></td>
+            <td><code>title|completed|targetDate</code></td>
+          </tr>
+          <tr>
+            <td><code>data/pomodoro_stats.txt</code></td>
+            <td><code>loadTodayStats()</code>, <code>loadAllStats()</code></td>
+            <td><code>saveStats()</code></td>
+            <td><code>date|completed|cancelled|totalMinutes</code></td>
+          </tr>
+          <tr>
+            <td><code>data/daily_goal.txt</code></td>
+            <td><code>loadTodayGoal()</code></td>
+            <td><code>saveTodayGoal()</code></td>
+            <td><code>date|goal</code></td>
+          </tr>
+          <tr>
+            <td><code>data/memo.txt</code></td>
+            <td><code>loadTodayMemo()</code></td>
+            <td><code>saveTodayMemo()</code></td>
+            <td><code>date|memo</code>, 줄바꿈은 <code>&lt;NL&gt;</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>7. 기능별 담당 파일</h2>
+      <div class="two-col">
+        <div>
+          <h3>타이머/통계</h3>
+          <p>
+            <span class="tag">TimerPanel.java</span>
+            <span class="tag">PomodoroService.java</span>
+            <span class="tag">PomodoroStats.java</span>
+            <span class="tag">StudyStatsFrame.java</span>
+            <span class="tag">DataManager.java</span>
+          </p>
+          <p class="note">
+            START, PAUSE, RESET, 완료 기록, 취소 기록, 성공률 계산이 이 묶음에 있습니다.
+          </p>
+        </div>
+        <div>
+          <h3>TODO/목표/캘린더</h3>
+          <p>
+            <span class="tag">TodoPanel.java</span>
+            <span class="tag">TodoService.java</span>
+            <span class="tag">Todo.java</span>
+            <span class="tag">MainFrame.java</span>
+            <span class="tag">CalendarMemoPanel.java</span>
+          </p>
+          <p class="note">
+            할 일 추가/삭제/완료, 오늘 목표 저장, 날짜별 기록 조회가 이 묶음에 있습니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>8. 현재 SPEC 진행 상태</h2>
+      <div class="status">
+        <div class="status-card">
+          <strong class="done">완료</strong>
+          <p><code>SPEC-02</code> 오늘 목표 저장</p>
+          <p><code>SPEC-05</code> 메모 저장</p>
+          <p><code>SPEC-06</code> 캘린더 구현</p>
+          <p><code>SPEC-07</code> 통계 패널/성공률</p>
+        </div>
+        <div class="status-card">
+          <strong class="todo">남은 작업</strong>
+          <p><code>SPEC-01</code> TODO 제목 수정</p>
+          <p><code>SPEC-04</code> 통계 HH:MM 표시 개선</p>
+        </div>
+        <div class="status-card">
+          <strong>빌드</strong>
+          <p><code>javac -encoding UTF-8 -d out $(find src -name "*.java")</code></p>
+          <p class="note">현재 코드 기준 컴파일 확인 완료.</p>
+        </div>
+      </div>
+      <div class="callout">
+        공부 순서는 <code>MainFrame</code>에서 화면 조립을 보고, <code>TimerPanel</code> 또는 <code>TodoPanel</code>의 버튼 이벤트를 따라간 다음, Service와 DataManager까지 내려가는 방식이 가장 편합니다.
+      </div>
+    </section>
+  </main>
+</body>
+</html>
