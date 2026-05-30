@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
@@ -37,7 +36,6 @@ public class MainFrame extends JFrame {
     private JLabel lblPomodoroCount;
     private final DataManager dataManager;
     private final PomodoroService pomodoroService;
-    private StatsPanel statsPanel;
 
     public MainFrame() {
         dataManager = new DataManager();
@@ -67,17 +65,15 @@ public class MainFrame extends JFrame {
         JPanel rightArea = new JPanel(new GridLayout(2, 1, 0, 20));
         rightArea.setOpaque(false);
 
+        JLabel todoDate = createPanelTitle("");
+        todoDate.setForeground(new Color(180, 32, 41));
+        TodoPanel todoPanel = new TodoPanel(todoService, todoDate);
         JPanel todoArea = createModernPanel("TODO-LIST");
-        todoArea.add(new TodoPanel(todoService), BorderLayout.CENTER);
+        todoArea.add(createTodoTitle(todoDate), BorderLayout.NORTH);
+        todoArea.add(todoPanel, BorderLayout.CENTER);
 
-        statsPanel = new StatsPanel(pomodoroService);
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
-        tabbedPane.addTab("캘린더", new CalendarMemoPanel(dataManager));
-        tabbedPane.addTab("학습 통계", statsPanel);
-
-        JPanel calendarArea = createModernPanel("CALENDAR & STATS");
-        calendarArea.add(tabbedPane, BorderLayout.CENTER);
+        JPanel calendarArea = createModernPanel("CALENDAR");
+        calendarArea.add(new CalendarMemoPanel(dataManager, todoPanel::showTodosForDate), BorderLayout.CENTER);
 
         rightArea.add(todoArea);
         rightArea.add(calendarArea);
@@ -99,7 +95,7 @@ public class MainFrame extends JFrame {
         JButton btnGemini = createFlatButton("Gemini", Color.WHITE);
         JButton btnDict = createFlatButton("어학사전", Color.WHITE);
 
-        btnStatsLink.addActionListener(e -> showStatsDialog());
+        btnStatsLink.addActionListener(e -> showStatsFrame());
         btnKNUCSE.addActionListener(e -> openWebPage("https://cse.knu.ac.kr/bbs/board.php?bo_table=sub5_1&lang=kor"));
         btnLMS.addActionListener(e -> openWebPage("https://lms.knu.ac.kr"));
         btnGemini.addActionListener(e -> openWebPage("https://gemini.google.com"));
@@ -164,7 +160,7 @@ public class MainFrame extends JFrame {
     private JButton createFlatButton(String text, Color textColor) {
         JButton button = new JButton(text);
         button.setForeground(textColor);
-        button.setFont(new Font("맑은 고딕", Font.BOLD, 13));
+        button.setFont(new Font("맑은 고딕", Font.BOLD, 14));
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
@@ -189,10 +185,22 @@ public class MainFrame extends JFrame {
                 new EmptyBorder(20, 20, 20, 20)
         ));
 
+        panel.add(createPanelTitle(title), BorderLayout.NORTH);
+        return panel;
+    }
+
+    private JLabel createPanelTitle(String title) {
         JLabel label = new JLabel(title);
         label.setFont(new Font("맑은 고딕", Font.BOLD, 14));
         label.setForeground(Color.GRAY);
-        panel.add(label, BorderLayout.NORTH);
+        return label;
+    }
+
+    private JPanel createTodoTitle(JLabel todoDate) {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        panel.setOpaque(false);
+        panel.add(createPanelTitle("TODO-LIST /"));
+        panel.add(todoDate);
         return panel;
     }
 
@@ -204,18 +212,20 @@ public class MainFrame extends JFrame {
         }
     }
 
-    private void showStatsDialog() {
-        PomodoroStats stats = pomodoroService.getTodayStats();
-        JOptionPane.showMessageDialog(this,
-                "오늘 완료한 뽀모도로: " + stats.getCompletedPomodoros() + "회\n"
-                        + "오늘 총 공부시간: " + stats.getTotalFocusMinutes() + "분");
+    private void showStatsFrame() {
+        new StudyStatsFrame(dataManager).setVisible(true);
     }
 
     private void refreshStats() {
         PomodoroStats stats = pomodoroService.getTodayStats();
-        lblTotalTime.setText("총 공부시간  " + stats.getTotalFocusMinutes() + "분");
+        lblTotalTime.setText("총 공부시간  " + formatStudyTime(stats.getTotalFocusMinutes()));
         lblPomodoroCount.setText("완료한 뽀모도로  " + stats.getCompletedPomodoros() + "회");
-        if (statsPanel != null) statsPanel.refreshTable();
+    }
+
+    private String formatStudyTime(int totalMinutes) {
+        int hours = totalMinutes / 60;
+        int minutes = totalMinutes % 60;
+        return String.format("%02dH %02dM", hours, minutes);
     }
 
     private void openWebPage(String url) {
